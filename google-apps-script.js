@@ -170,7 +170,7 @@ function doPost(e) {
       }
       
       if (!targetFolder) {
-        throw new Error('Category folder not found.');
+        targetFolder = rootFolder.createFolder(data.category);
       }
       
       // Decode base64 data

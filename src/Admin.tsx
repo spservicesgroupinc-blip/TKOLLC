@@ -2,7 +2,15 @@ import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { Upload, X, ShieldCheck, FileImage } from 'lucide-react';
 
-const CATEGORIES = ["Custom Homes", "Renovations", "Kitchens & Baths"];
+const CATEGORIES = [
+  "About Us",
+  "Services - Custom Homes",
+  "Services - Renovations",
+  "Services - Framing",
+  "Portfolio - Custom Homes",
+  "Portfolio - Renovations",
+  "Portfolio - Kitchens & Baths"
+];
 
 export const Admin = () => {
   const [password, setPassword] = useState('');

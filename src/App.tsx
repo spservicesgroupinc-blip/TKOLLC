@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Hammer, Building2, Home, Wrench, Menu, X, Phone, Mail, MapPin, ChevronRight, HardHat } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
+export type SiteImageData = { category: string; images: { id: string; name: string; url: string }[] }[];
+
 const BrandLogo = ({ className = "w-32" }: { className?: string }) => {
   return (
     <div className={`relative flex flex-col items-center justify-center ${className} aspect-square`}>
@@ -199,25 +201,35 @@ const Hero = ({ openContactModal }: { openContactModal: () => void }) => {
   );
 };
 
-const Services = ({ openContactModal }: { openContactModal: () => void }) => {
+const Services = ({ openContactModal, siteImages }: { openContactModal: () => void, siteImages: SiteImageData | null }) => {
+  const getImageUrl = (defaultUrl: string, category: string) => {
+    if (siteImages) {
+      const cat = siteImages.find(c => c.category === category);
+      if (cat && cat.images.length > 0) {
+        return cat.images[0].url;
+      }
+    }
+    return defaultUrl;
+  };
+
   const services = [
     {
       title: 'Custom Homes',
       desc: 'Ground-up residential construction built to your exact specifications with premium finishes and structural integrity.',
       icon: <Home className="w-6 h-6 text-gold-500" />,
-      image: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&q=80'
+      image: getImageUrl('https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&q=80', 'Services - Custom Homes')
     },
     {
       title: 'Renovations',
       desc: 'Transforming existing spaces with uncompromising quality, meticulous care, and modern design principles.',
       icon: <Wrench className="w-6 h-6 text-gold-500" />,
-      image: 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&q=80'
+      image: getImageUrl('https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&q=80', 'Services - Renovations')
     },
     {
       title: 'Framing & Structural',
       desc: 'Precision residential framing and structural foundations ensuring your home is built to last generations.',
       icon: <Hammer className="w-6 h-6 text-gold-500" />,
-      image: 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&q=80'
+      image: getImageUrl('https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&q=80', 'Services - Framing')
     }
   ];
 
@@ -256,7 +268,19 @@ const Services = ({ openContactModal }: { openContactModal: () => void }) => {
   );
 };
 
-const About = () => {
+const About = ({ siteImages }: { siteImages: SiteImageData | null }) => {
+  const getImageUrl = (defaultUrl: string, category: string) => {
+    if (siteImages) {
+      const cat = siteImages.find(c => c.category === category);
+      if (cat && cat.images.length > 0) {
+        return cat.images[0].url;
+      }
+    }
+    return defaultUrl;
+  };
+
+  const aboutImage = getImageUrl("https://images.unsplash.com/photo-1504307651254-35680f356f58?auto=format&fit=crop&q=80", "About Us");
+
   return (
     <section id="about-us" className="py-32 bg-charcoal-950 relative border-y border-white/5">
       <div className="max-w-7xl mx-auto px-6">
@@ -297,7 +321,7 @@ const About = () => {
              <div className="aspect-square rounded-full border border-gold-500/10 absolute -inset-16 animate-[spin_180s_linear_infinite_reverse] pointer-events-none" />
              <div className="relative z-10 overflow-hidden border border-white/10">
                <img 
-                 src="https://images.unsplash.com/photo-1504307651254-35680f356f58?auto=format&fit=crop&q=80" 
+                 src={aboutImage}
                  alt="Craftsmanship" 
                  className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700 hover:scale-105"
                />
@@ -315,39 +339,7 @@ const About = () => {
   );
 };
 
-const Portfolio = () => {
-  const [portfolioData, setPortfolioData] = useState<{ category: string; images: { id: string; name: string; url: string }[] }[] | null>(null);
-  const [loading, setLoading] = useState(true);
-  
-  useEffect(() => {
-    const fetchPortfolio = async () => {
-      try {
-        const scriptUrl = import.meta.env.VITE_APPS_SCRIPT_URL;
-        if (!scriptUrl || scriptUrl === 'YOUR_APPS_SCRIPT_WEB_APP_URL' || !scriptUrl.startsWith('http')) {
-          console.warn('Apps Script URL is not configured. Showing default portfolio.');
-          setLoading(false);
-          return;
-        }
-
-        const response = await fetch(scriptUrl, {
-          method: 'GET',
-          redirect: 'follow'
-        });
-        const data = await response.json();
-        
-        if (data.status === 'success' && data.data.length > 0) {
-          setPortfolioData(data.data);
-        }
-      } catch (err) {
-        console.error('Error fetching portfolio:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchPortfolio();
-  }, []);
-
+const Portfolio = ({ siteImages, loading }: { siteImages: SiteImageData | null, loading: boolean }) => {
   const defaultImages = [
     { url: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80', title: 'Modern Estate' },
     { url: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80', title: 'Custom Build' },
@@ -355,14 +347,16 @@ const Portfolio = () => {
     { url: 'https://images.unsplash.com/photo-1600607686527-6fb886090705?auto=format&fit=crop&q=80', title: 'Home Addition' },
   ];
 
-  // For simplicity, if we have dynamic data, we flatten the first 4 images to display in the grid
   let displayImages = defaultImages;
-  if (portfolioData && portfolioData.length > 0) {
-    const flattened = portfolioData.flatMap(cat => 
-      cat.images.map(img => ({ url: img.url, title: cat.category }))
-    );
-    if (flattened.length > 0) {
-      displayImages = flattened.slice(0, 8); // Show up to 8 images if available
+  if (siteImages) {
+    const portfolioCategories = siteImages.filter(cat => cat.category.startsWith("Portfolio - ") || ["Custom Homes", "Renovations", "Kitchens & Baths"].includes(cat.category));
+    if (portfolioCategories.length > 0) {
+      const flattened = portfolioCategories.flatMap(cat => 
+        cat.images.map(img => ({ url: img.url, title: cat.category.replace("Portfolio - ", "") }))
+      );
+      if (flattened.length > 0) {
+        displayImages = flattened.slice(0, 8);
+      }
     }
   }
 
@@ -720,6 +714,36 @@ import { Admin } from './Admin';
 export default function App() {
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
   const [hash, setHash] = useState(typeof window !== 'undefined' ? window.location.hash : '');
+  const [siteImages, setSiteImages] = useState<SiteImageData | null>(null);
+  const [imagesLoading, setImagesLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchImages = async () => {
+      try {
+        const scriptUrl = import.meta.env.VITE_APPS_SCRIPT_URL;
+        if (!scriptUrl || scriptUrl === 'YOUR_APPS_SCRIPT_WEB_APP_URL' || !scriptUrl.startsWith('http')) {
+          setImagesLoading(false);
+          return;
+        }
+
+        const response = await fetch(scriptUrl, {
+          method: 'GET',
+          redirect: 'follow'
+        });
+        const data = await response.json();
+        
+        if (data.status === 'success' && data.data.length > 0) {
+          setSiteImages(data.data);
+        }
+      } catch (err) {
+        console.error('Error fetching site images:', err);
+      } finally {
+        setImagesLoading(false);
+      }
+    };
+
+    fetchImages();
+  }, []);
 
   useEffect(() => {
     const handleHashChange = () => setHash(window.location.hash);
@@ -737,9 +761,9 @@ export default function App() {
     <div className="min-h-screen bg-charcoal-950 font-sans text-white overflow-x-hidden">
       <Header openContactModal={openContactModal} />
       <Hero openContactModal={openContactModal} />
-      <Services openContactModal={openContactModal} />
-      <About />
-      <Portfolio />
+      <Services openContactModal={openContactModal} siteImages={siteImages} />
+      <About siteImages={siteImages} />
+      <Portfolio siteImages={siteImages} loading={imagesLoading} />
       <Footer />
       <ContactModal isOpen={isContactModalOpen} onClose={() => setIsContactModalOpen(false)} />
     </div>
