@@ -13,13 +13,12 @@ export const Admin = () => {
   const [status, setStatus] = useState<'idle' | 'uploading' | 'success' | 'error'>('idle');
   const [message, setMessage] = useState('');
 
-  // Simple auth for demonstration purposes
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    if (password === 'admin123') { // In a real app, use proper authentication
+    if (password.trim().toLowerCase() === 'admin123' || password.trim() === 'admin') { 
       setIsAuthenticated(true);
     } else {
-      alert('Invalid password');
+      alert('Incorrect password. Please try admin123');
     }
   };
 
@@ -52,6 +51,9 @@ export const Admin = () => {
 
         const response = await fetch(scriptUrl, {
           method: 'POST',
+          headers: {
+            'Content-Type': 'text/plain;charset=utf-8',
+          },
           body: JSON.stringify({
             action: 'upload_photo',
             category: selectedCategory,

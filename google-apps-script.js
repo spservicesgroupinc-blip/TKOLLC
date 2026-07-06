@@ -1,10 +1,10 @@
 // INSTRUCTIONS FOR DEPLOYMENT:
-// 1. Go to https://script.google.com and create a new project.
-// 2. Paste this entire code into the Code.gs file.
+// 1. Go to https://script.google.com and create a new project (or use your existing one).
+// 2. Paste this entire code into the Code.gs file, REPLACING any existing code.
 // 3. Run the setup() function ONCE from the editor. It will automatically create a new Google Sheet named "T.K.O Construction Leads" in your Drive to store submissions.
 // 4. Run the setupPortfolio() function ONCE from the editor. It will create a "T.K.O Construction Portfolio" folder in your Drive.
-// 5. Click "Deploy" -> "New Deployment" -> Select type "Web app".
-// 6. Set "Execute as" to "Me", and "Who has access" to "Anyone".
+// 5. Click "Deploy" -> "New Deployment" (IMPORTANT: Do NOT use "Manage Deployments" to edit an old one without creating a new version, always select "New Deployment").
+// 6. Select type "Web app". Set "Execute as" to "Me", and "Who has access" to "Anyone".
 // 7. Click Deploy, authorize any prompts, and copy the Web App URL.
 // 8. Add the URL to your app's secrets as VITE_APPS_SCRIPT_URL.
 
